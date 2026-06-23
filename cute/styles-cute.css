@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&family=M+PLUS+Rounded+1c:wght@500;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&family=M+PLUS+Rounded+1c:wght@500;700;800;900&family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@500;700;900&display=swap");
 
 :root {
   --ink: #3a3135;
@@ -7,6 +7,9 @@
   --green-soft: #e9fbf7;
   --coral: #ff8c90;
   --yellow: #ffd85d;
+  --orange: #ffb15f;
+  --blue: #71c8ff;
+  --lavender: #c7a7ff;
   --pink: #ffd8dd;
   --cream: #fff9ee;
   --paper: #fff7ef;
@@ -21,7 +24,7 @@ body {
     radial-gradient(circle at 10px 10px, rgba(255, 140, 144, 0.16) 0 3px, transparent 4px) 0 0 / 32px 32px,
     linear-gradient(90deg, rgba(86, 187, 174, 0.08) 25%, transparent 25% 50%, rgba(86, 187, 174, 0.08) 50% 75%, transparent 75%) 0 0 / 38px 38px,
     linear-gradient(180deg, #fffdf8 0, #fff4ef 46%, #f4fcf8 100%);
-  font-family: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+  font-family: "Zen Maru Gothic", "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
 }
 
 h1,
@@ -34,8 +37,8 @@ h3,
 .tel-button,
 .quick-item strong,
 .link-card strong {
-  font-family: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
-  font-weight: 900;
+  font-family: "Mochiy Pop One", "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+  font-weight: 400;
 }
 
 p,
@@ -45,14 +48,15 @@ dd,
 small,
 td,
 th {
-  font-family: "Kiwi Maru", "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
-  font-weight: 500;
+  font-family: "Zen Maru Gothic", "Kiwi Maru", "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+  font-weight: 700;
 }
 
 .site-header {
   border-bottom: 0;
   background:
-    linear-gradient(90deg, rgba(255, 216, 221, 0.65) 25%, transparent 25% 50%, rgba(255, 216, 221, 0.65) 50% 75%, transparent 75%) 0 0 / 34px 34px,
+    linear-gradient(90deg, rgba(255, 216, 221, 0.7) 25%, transparent 25% 50%, rgba(143, 224, 212, 0.42) 50% 75%, transparent 75%) 0 0 / 34px 34px,
+    radial-gradient(circle at 18px 18px, rgba(255, 216, 93, 0.28) 0 4px, transparent 5px) 0 0 / 36px 36px,
     rgba(255, 253, 248, 0.96);
   box-shadow: 0 10px 24px rgba(255, 140, 144, 0.15);
 }
@@ -85,15 +89,43 @@ th {
   border: 2px solid rgba(255, 140, 144, 0.28);
   border-radius: 999px;
   background: #fff;
+  color: #6c5b61;
   box-shadow: 0 5px 0 rgba(86, 187, 174, 0.15);
 }
 
-.site-nav a:nth-child(odd) {
+.site-nav a:nth-child(1) {
   background: #fff1f4;
+  color: #d4626d;
 }
 
-.site-nav a:nth-child(even) {
+.site-nav a:nth-child(2) {
   background: #ecfbf7;
+  color: #258d83;
+}
+
+.site-nav a:nth-child(3) {
+  background: #fff4ce;
+  color: #9b7615;
+}
+
+.site-nav a:nth-child(4) {
+  background: #f2ebff;
+  color: #7b61bd;
+}
+
+.site-nav a:nth-child(5) {
+  background: #eaf7ff;
+  color: #2d7eaa;
+}
+
+.site-nav a:nth-child(6) {
+  background: #ffecef;
+  color: #c85679;
+}
+
+.site-nav a:nth-child(7) {
+  background: #ebfbef;
+  color: #4d935c;
 }
 
 .site-nav a.current,
@@ -130,11 +162,12 @@ th {
 
 .tel-button,
 .primary-button {
-  background: linear-gradient(180deg, #ffa2a5, #f08088);
+  background: linear-gradient(135deg, #ff8fa1 0, #ff7f88 48%, #ffb15f 100%);
 }
 
 .secondary-button {
-  background: linear-gradient(180deg, #ffe27a, #f3c945);
+  background: linear-gradient(135deg, #ffe36f 0, #ffd255 52%, #8edfd3 100%);
+  color: #503f17;
 }
 
 .tel-button:hover,
@@ -153,7 +186,8 @@ th {
   overflow: hidden;
   background:
     linear-gradient(90deg, rgba(255, 249, 238, 0.97) 0 40%, rgba(255, 249, 238, 0.56) 62%, rgba(255, 249, 238, 0.1) 100%),
-    linear-gradient(135deg, rgba(255, 216, 221, 0.6) 25%, transparent 25% 50%, rgba(255, 216, 221, 0.6) 50% 75%, transparent 75%) 0 0 / 42px 42px,
+    linear-gradient(135deg, rgba(255, 216, 221, 0.58) 25%, transparent 25% 50%, rgba(142, 223, 211, 0.34) 50% 75%, transparent 75%) 0 0 / 42px 42px,
+    radial-gradient(circle at 22px 22px, rgba(255, 216, 93, 0.28) 0 5px, transparent 6px) 0 0 / 44px 44px,
     #fff8ef;
 }
 
@@ -189,7 +223,8 @@ th {
 .hero-tone {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 248, 239, 0.82)),
-    radial-gradient(circle at 20px 20px, rgba(255, 140, 144, 0.14) 0 4px, transparent 5px) 0 0 / 42px 42px;
+    radial-gradient(circle at 20px 20px, rgba(255, 140, 144, 0.16) 0 4px, transparent 5px) 0 0 / 42px 42px,
+    radial-gradient(circle at 40px 40px, rgba(113, 200, 255, 0.14) 0 4px, transparent 5px) 0 0 / 42px 42px;
 }
 
 .hero-inner {
@@ -207,6 +242,7 @@ th {
   color: #258d83;
   box-shadow: 0 5px 0 rgba(255, 216, 221, 0.7);
   font-family: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", sans-serif;
+  font-weight: 900;
   letter-spacing: 0;
 }
 
@@ -215,11 +251,42 @@ th {
 .section-copy h2,
 .section-heading h2,
 .signature-section h2 {
+  font-family: "Mochiy Pop One", "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+  font-weight: 400;
   color: #342d30;
   letter-spacing: 0;
   text-shadow:
     3px 3px 0 rgba(255, 216, 221, 0.78),
     6px 6px 0 rgba(255, 216, 93, 0.34);
+}
+
+.hero h1 {
+  color: #ff7f88;
+}
+
+.hero h1 .keep:first-child {
+  color: #ff7f88;
+}
+
+.hero h1 .keep:last-child {
+  color: #28a99e;
+}
+
+.page-hero h1,
+.signature-section h2 {
+  background: linear-gradient(90deg, #ff7f88 0, #ffb15f 34%, #28a99e 68%, #7b61bd 100%);
+  background-clip: text;
+  color: transparent;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(3px 3px 0 rgba(255, 216, 221, 0.7));
+}
+
+.section-copy h2,
+.section-heading h2 {
+  color: #ff7f88;
+  -webkit-text-fill-color: #ff7f88;
+  filter: drop-shadow(3px 3px 0 rgba(255, 216, 221, 0.75));
 }
 
 .hero h1 .keep:first-child {
@@ -240,7 +307,8 @@ th {
   border: 2px dashed rgba(86, 187, 174, 0.45);
   border-radius: 28px;
   background:
-    radial-gradient(circle at 12px 12px, rgba(255, 216, 221, 0.35) 0 3px, transparent 4px) 0 0 / 28px 28px,
+    radial-gradient(circle at 12px 12px, rgba(255, 216, 221, 0.38) 0 3px, transparent 4px) 0 0 / 28px 28px,
+    radial-gradient(circle at 26px 26px, rgba(113, 200, 255, 0.2) 0 3px, transparent 4px) 0 0 / 28px 28px,
     rgba(255, 255, 255, 0.84);
 }
 
@@ -263,7 +331,7 @@ th {
   border-radius: 32px;
   background:
     linear-gradient(#fff, #fff) padding-box,
-    linear-gradient(135deg, #ffd8dd, #fff0b8, #c9f4ec) border-box;
+    linear-gradient(135deg, #ff9ca1, #ffd85d, #8edfd3, #9fd2ff, #c7a7ff) border-box;
   box-shadow: var(--photo-shadow);
 }
 
@@ -295,6 +363,38 @@ th {
 .topic-card:hover {
   box-shadow: 0 12px 26px rgba(255, 140, 144, 0.2);
   transform: translateY(-2px);
+}
+
+.quick-item:nth-child(1),
+.link-card:nth-child(1),
+.topic-card:nth-child(1) {
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(135deg, #ff8fa1, #ffd8dd, #fff) border-box;
+}
+
+.quick-item:nth-child(2),
+.link-card:nth-child(2),
+.topic-card:nth-child(2) {
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(135deg, #56bbae, #8edfd3, #fff) border-box;
+}
+
+.quick-item:nth-child(3),
+.link-card:nth-child(3),
+.topic-card:nth-child(3) {
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(135deg, #ffd85d, #ffb15f, #fff) border-box;
+}
+
+.quick-item:nth-child(4),
+.link-card:nth-child(4),
+.topic-card:nth-child(4) {
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(135deg, #71c8ff, #c7a7ff, #fff) border-box;
 }
 
 .line-icon {
@@ -367,6 +467,7 @@ th {
   background: #e9fbf7;
   color: #258d83;
   font-family: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", sans-serif;
+  font-weight: 900;
 }
 
 .topic-link-text {
@@ -457,7 +558,19 @@ th {
 }
 
 .link-card strong {
-  color: #258d83;
+  color: #ff7f88;
+}
+
+.link-card:nth-child(2) strong {
+  color: #28a99e;
+}
+
+.link-card:nth-child(3) strong {
+  color: #d28b13;
+}
+
+.link-card:nth-child(4) strong {
+  color: #7b61bd;
 }
 
 .site-footer {
