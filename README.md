@@ -4,7 +4,7 @@
 
 ## 確認ファイル
 
-通常案はリポジトリ直下の `index.html` から確認できます。さらにPOP感を強めた別デザイン案は `pop/index.html` から確認できます。`pop/` は本文・写真イラスト・キャラクターを同じまま、枠、ボタン、カード、背景パターンの表現だけを変えた比較案です。
+通常案はリポジトリ直下の `index.html` から確認できます。さらにPOP感を強めた別デザイン案は `pop/index.html` から確認できます。3つ目の可愛い案は `cute/index.html` から確認できます。`pop/` と `cute/` は本文・写真イラスト・キャラクターを同じまま、枠、ボタン、カード、背景パターン、フォントの表現だけを変えた比較案です。
 
 - `index.html`
 - `access.html`
@@ -18,6 +18,7 @@
 - `topics-data.js`
 - `TOPICS_EDITING.md`
 - `pop/`
+- `cute/`
 - `assets/original-logo.png`
 - `assets/hero-clinic-pop-illustration.png`
 - `assets/topic-board-frame.png`
