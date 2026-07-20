@@ -12,7 +12,9 @@
   <body class="review-site">
     <header class="site-header">
       <a class="brand" href="./index.html" aria-label="トップページへ"><img src="../assets/original-logo.png" alt="おおくぼ内科クリニック" /></a>
-      <nav class="site-nav" aria-label="主要ナビゲーション"><a href="./index.html#hours">診療時間</a><a href="./index.html#first-visit">初診案内</a><a href="./index.html#services">診療内容</a><a href="./endoscopy.html">内視鏡</a><a href="./doctor.html">医師紹介</a><a href="./access.html">アクセス</a></nav>
+      <nav class="site-nav" aria-label="主要ナビゲーション">
+        <a href="./guide.html#hours">診療時間</a><a href="./access.html">交通案内</a><a class="current" href="./doctor.html">医師の紹介</a><a href="./guide.html">医院案内</a><a href="./emergency.html">院内緊急検査</a><a href="./endoscopy.html">内視鏡検査</a><a href="./pylori.html">ピロリ菌</a>
+      </nav>
       <a class="tel-button reaction-button" href="tel:0565430600" data-reaction="call">0565-43-0600</a>
     </header>
     <main>
@@ -23,7 +25,7 @@
           <p>この町の頼れる「かかりつけ医」として、信頼できる医療を身近に提供していきます。</p>
         </div>
         <figure class="page-visual">
-          <img class="doctor-real-photo" src="../assets/client-202607/doctor-profile.jpg" alt="院長 大久保賢治" />
+          <img class="client-doctor-photo" src="../assets/client-202607/doctor-profile.jpg" alt="院長 大久保賢治" />
         </figure>
       </section>
       <section class="section page-grid two-one">
@@ -68,17 +70,16 @@
             <li>日本医師会認定産業医</li>
           </ul>
         </article>
-        <article class="info-panel wide-panel official-character-panel">
+        <article class="info-panel client-character-panel">
           <img src="../assets/client-202607/official-characters.png" alt="おおくぼ内科クリニック公式キャラクター" />
-          <div>
-            <p class="eyebrow">Clinic characters</p>
-            <h2>スタッフ紹介</h2>
-            <p>スタッフ一同いつでも笑顔を絶やさずに、皆さんのご来院をお待ちしております。ご不明な点がありましたら、遠慮なくお問い合わせ下さい。</p>
-          </div>
+          <h2>スタッフ紹介</h2>
+          <p>スタッフ一同いつでも笑顔を絶やさずに、皆さんのご来院をお待ちしております。ご不明な点がありましたら、遠慮なくお問い合わせ下さい。</p>
         </article>
       </section>
     </main>
     <footer class="site-footer"><p>おおくぼ内科クリニック</p><p>〒470-0343 愛知県豊田市浄水町南平56-1 / 内科,消化器内科</p><p>Copyright (C) 2013 Okubo Naika Clinic All Rights Reserved.</p></footer>
+    <script src="./review-data.js"></script>
+    <script src="./review-store.js"></script>
     <script src="../script.js"></script>
     <script src="./review.js"></script>
   </body>

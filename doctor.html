@@ -3,11 +3,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
     <title>医師の紹介 | おおくぼ内科クリニック</title>
     <meta name="description" content="おおくぼ内科クリニック 院長 大久保賢治の紹介、略歴、所属学会・認定医等。" />
     <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./review.css" />
   </head>
-  <body>
+  <body class="review-site">
     <header class="site-header">
       <a class="brand" href="./index.html" aria-label="トップページへ"><img src="./assets/original-logo.png" alt="おおくぼ内科クリニック" /></a>
       <nav class="site-nav" aria-label="主要ナビゲーション">
@@ -23,7 +25,7 @@
           <p>この町の頼れる「かかりつけ医」として、信頼できる医療を身近に提供していきます。</p>
         </div>
         <figure class="page-visual">
-          <img src="./assets/illust-doctor.png" alt="院長 大久保賢治の生成イラスト" />
+          <img class="client-doctor-photo" src="./assets/client-202607/doctor-profile.jpg" alt="院長 大久保賢治" />
         </figure>
       </section>
       <section class="section page-grid two-one">
@@ -68,13 +70,17 @@
             <li>日本医師会認定産業医</li>
           </ul>
         </article>
-        <article class="info-panel">
+        <article class="info-panel client-character-panel">
+          <img src="./assets/client-202607/official-characters.png" alt="おおくぼ内科クリニック公式キャラクター" />
           <h2>スタッフ紹介</h2>
           <p>スタッフ一同いつでも笑顔を絶やさずに、皆さんのご来院をお待ちしております。ご不明な点がありましたら、遠慮なくお問い合わせ下さい。</p>
         </article>
       </section>
     </main>
     <footer class="site-footer"><p>おおくぼ内科クリニック</p><p>〒470-0343 愛知県豊田市浄水町南平56-1 / 内科,消化器内科</p><p>Copyright (C) 2013 Okubo Naika Clinic All Rights Reserved.</p></footer>
+    <script src="./review-data.js"></script>
+    <script src="./review-store.js"></script>
     <script src="./script.js"></script>
+    <script src="./review.js"></script>
   </body>
 </html>
