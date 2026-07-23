@@ -20,7 +20,7 @@
 - `pop/`
 - `cute/`
 - `assets/original-logo.png`
-- `assets/hero-clinic-pop-illustration.png`
+- `assets/hero-clinic-official-characters.png`
 - `assets/topic-board-frame.png`
 - `assets/original/`
 - `assets/photo-*.jpg`
@@ -30,29 +30,29 @@
 
 ## 生成素材
 
-現在のTOPは、原本外観写真の荒さを避けるため、写真の構図をもとにしたPOP寄りの生成イラスト `assets/hero-clinic-pop-illustration.png` を使用しています。トピックスはTOP直下に移動し、gpt-image2生成の案内板素材 `assets/topic-board-frame.png` を背景に、本文はHTML文字として載せています。
+現在のTOPは、原本外観写真の構図をもとにした生成イラスト `assets/hero-clinic-official-characters.png` を使用しています。ヒーロー内のキャラクターは、支給された公式キャラクター3体（医師・女性医師・看護師）のデザインに統一します。今後、新しいページや画像を作る場合も、別デザインのうさぎを追加せず、この3体を基準にしてください。トピックスはTOP直下に移動し、gpt-image2生成の案内板素材 `assets/topic-board-frame.png` を背景に、本文はHTML文字として載せています。
 
-院内や設備は現行サイトの原本写真を保存した上で、画面表示用にはgpt-image2でTOPと同じ方向の明るい描き起こしイラスト `assets/illust-*.png` を使用しています。元写真は `assets/original/` と `assets/photo-*.jpg` に残し、以前の簡易加工版は `assets/previous-illust/` に退避しています。
+院内や設備は現行サイトの原本写真を保存した上で、画面表示用にはgpt-image2でTOPと同じ方向の明るい描き起こしイラスト `assets/illust-*.png` を使用しています。追加素材の外観は `assets/illust-clinic-exterior-client.png`、大久保先生の診察室イラストは `assets/illust-doctor-okubo.png`、医師紹介の肖像は `assets/illust-doctor-okubo-portrait.png` を使用します。元写真は `assets/original/`、`assets/photo-*.jpg`、`assets/client-202607/` に残し、以前の簡易加工版は `assets/previous-illust/` に退避しています。
 
 内視鏡検査、ピロリ菌、院内緊急検査、診療報酬の難しい説明には、同じタッチのgpt-image2生成図解 `assets/explain-*.png` を追加しています。画像内の文字には頼らず、説明文はHTML文字として残しています。
 
 `assets/original-logo.png` は現行サイトのロゴです。元ロゴのうさぎを削除しない前提で、ヘッダーと本文内にそのまま配置しています。
 
-TOPの二人のうさぎは、原本ロゴの丸い低等身のタッチに寄せ、女の子はメガネなしで生成しています。各項目の主役はキャラクターではなく、院内や設備を明るく見せる生成イラストカードです。
+TOPのうさぎは支給された公式キャラクター3体に統一しています。各項目の主役はキャラクターではなく、院内や設備を明るく見せる生成イラストカードです。
 
 ## 素材生成プロンプト
 
 ### マスコット
 
-`A cheerful original clinic mascot: a white rabbit girl wearing round glasses and a small nurse cape, friendly smile, colorful pop Japanese medical website style, teal peach yellow accents, full body, clean vector-like illustration, transparent background feel, no text`
+今後のマスコット生成では、必ず `assets/client-202607/official-characters.png` を参照画像として使用し、医師・女性医師・看護師の3体の顔、眼鏡、リボン、帽子、服装、配色を維持します。新規デザインのうさぎは作りません。
 
 ### ヒーロー背景
 
-`A bright pop-style Japanese neighborhood clinic exterior illustration, pastel peach building, teal accents, flowers, leaves, clean friendly medical website hero background, sunny morning, no text, no logos, wide composition`
+`Using the supplied official three-character rabbit reference without redesigning their faces, glasses, bows, nurse cap, clothing, or colors, create a bright pastel Japanese neighborhood clinic exterior illustration. Keep all three official characters together in the right foreground, small enough not to obscure the clinic. Salmon-pink clinic building, white entrance columns and canopy, cream wing, clean parking lot, blue sky, warm morning light, refined hand-drawn clinic illustration, wide 16:9 composition, clear negative space on the left for HTML text, no added text or logos.`
 
 ### 現行採用TOPイラスト
 
-`Model: gpt-image2. Create a wide hero illustration for an adult but slightly pop Japanese internal medicine clinic website. Recreate the clinic exterior from a reference description: a salmon-pink clinic building on the left, white entrance columns and canopy in the center, pale cream building wing on the right, large clean parking lot in front, blue sky, small green lawn. Style: polished flat Japanese clinic illustration, clean vector-like lines, warm pastel colors, tasteful POP accents, not childish, not fantasy, no photorealism, no blur. Add two small rabbit mascots on the right foreground in the same simple low-proportion touch as a clinic logo mascot: round head, small body, long ears, thin black outline, cream-white face. Boy rabbit wears small round glasses and a simple doctor coat. Girl rabbit wears a small nurse-like scarf or teal bow, no glasses. They stand calmly together, friendly but understated. Composition: 16:9, enough light negative space on the left for HTML text overlay. No text, no readable letters, no logos, no signage, no checkerboard, no transparent background.`
+`Model: gpt-image2. Use the supplied clinic exterior and official character sheet as references. Preserve the official three characters exactly: the male doctor with large square glasses and orange stethoscope, the female doctor with the pink polka-dot bow, and the nurse with the blue checked bow and blue cap. Place all three together in the right foreground. Recreate the salmon-pink clinic building, white entrance columns and canopy, pale cream wing, parking lot, blue sky, and small green lawn in the same warm pastel hand-drawn style used across the site. Composition: wide 16:9 with light negative space on the left for HTML text. Do not add, remove, or redesign characters. No added text, logos, checkerboard, or transparent background.`
 
 ### トピックス案内板
 
