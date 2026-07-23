@@ -414,7 +414,7 @@ aside,
   z-index: 7;
   margin-top: -58px;
   padding: 74px 142px 72px;
-  background: url("./assets/topic-board-frame.png") center / 100% 100% no-repeat;
+  background: url("./assets/topic-board-frame.webp") center / 100% 100% no-repeat;
 }
 
 .guide-board-section .topics-heading {
