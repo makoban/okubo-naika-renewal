@@ -32,7 +32,7 @@
 
 現在のTOPは、原本外観写真の構図をもとにした生成イラスト `assets/hero-clinic-official-characters.png` を使用しています。ヒーロー内のキャラクターは、支給された公式キャラクター3体（医師・女性医師・看護師）のデザインに統一します。今後、新しいページや画像を作る場合も、別デザインのうさぎを追加せず、この3体を基準にしてください。トピックスはTOP直下に移動し、gpt-image2生成の案内板素材 `assets/topic-board-frame.png` を背景に、本文はHTML文字として載せています。
 
-院内や設備は現行サイトの原本写真を保存した上で、画面表示用にはgpt-image2でTOPと同じ方向の明るい描き起こしイラスト `assets/illust-*.png` を使用しています。追加素材の外観は `assets/illust-clinic-exterior-client.png`、大久保先生の診察室イラストは `assets/illust-doctor-okubo.png`、医師紹介の肖像は `assets/illust-doctor-okubo-portrait.png` を使用します。元写真は `assets/original/`、`assets/photo-*.jpg`、`assets/client-202607/` に残し、以前の簡易加工版は `assets/previous-illust/` に退避しています。
+院内や設備は現行サイトの原本写真を保存した上で、画面表示用にはgpt-image2でTOPと同じ方向の明るい描き起こしイラスト `assets/illust-*.png` を使用しています。追加素材の外観は `assets/illust-clinic-exterior-client.png`、大久保先生の診察室イラストは `assets/illust-doctor-okubo.png`、医師紹介の肖像は輪郭線と淡彩表現を明確にした `assets/illust-doctor-okubo-portrait-drawn.png` を使用します。元写真は `assets/original/`、`assets/photo-*.jpg`、`assets/client-202607/` に残し、以前の簡易加工版は `assets/previous-illust/` に退避しています。
 
 内視鏡検査、ピロリ菌、院内緊急検査、診療報酬の難しい説明には、同じタッチのgpt-image2生成図解 `assets/explain-*.png` を追加しています。画像内の文字には頼らず、説明文はHTML文字として残しています。
 
