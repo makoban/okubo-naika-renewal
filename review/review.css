@@ -1,26 +1,4 @@
 /* 通常版の見た目を維持し、確認版に必要な箇所だけを追加する。 */
-.review-admin-fab {
-  position: fixed;
-  right: 14px;
-  bottom: 14px;
-  z-index: 50;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 40px;
-  padding: 8px 16px;
-  border: 2px solid #fff;
-  border-radius: 999px;
-  color: #fff;
-  background: #243238;
-  box-shadow: 0 8px 24px rgba(36, 50, 56, 0.22);
-  font-size: 12px;
-  font-weight: 900;
-}
-
-.review-admin-fab:hover {
-  background: #24776f;
-}
 
 .topic-card.topic-tone-important {
   border-color: rgba(200, 111, 97, 0.5);
@@ -541,14 +519,6 @@ body.review-admin {
     padding-left: 0;
   }
 
-  .review-admin-fab {
-    right: 10px;
-    bottom: 10px;
-    min-height: 36px;
-    padding: 7px 12px;
-    font-size: 10px;
-  }
-
   .review-gallery.equipment-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
@@ -658,8 +628,7 @@ body.review-admin {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .review-gallery-dialog,
-  .review-admin-fab {
+  .review-gallery-dialog {
     scroll-behavior: auto;
   }
 }
