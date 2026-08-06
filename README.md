@@ -69,3 +69,13 @@ TOPのうさぎは支給された公式キャラクター3体に統一してい�
 ### 絵文字風アイコン
 
 `Cute medical emoji sticker sheet for a Japanese clinic website: phone, clock, map pin, stomach, endoscope, heart, calendar, check mark, sparkling stars, pastel mint coral yellow, no text, isolated icons on white`
+
+## CMS回帰テスト
+
+追加パッケージは不要です。Node.jsの標準テストランナーで実行します。
+
+```bash
+node --test tests/*.test.mjs
+```
+
+公開ページがブラウザ下書きを読み込まないことと、CMS公開データに公開済みマーカーが生成されることを検査します。

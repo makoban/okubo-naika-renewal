@@ -85,7 +85,7 @@ if (checkOnly) {
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const repositoryRoot = path.resolve(scriptDirectory, "..");
-const output = `window.OKUBO_REVIEW_DEFAULTS = ${JSON.stringify(normalized, null, 2)};\n\nwindow.OKUBO_TOPICS = window.OKUBO_REVIEW_DEFAULTS.topics;\n`;
+const output = `window.OKUBO_REVIEW_DEFAULTS = ${JSON.stringify(normalized, null, 2)};\n\nwindow.OKUBO_TOPICS = window.OKUBO_REVIEW_DEFAULTS.topics;\nwindow.OKUBO_REVIEW_SOURCE = "published";\n`;
 
 fs.writeFileSync(path.join(repositoryRoot, "review-data.js"), output, "utf8");
 fs.writeFileSync(path.join(repositoryRoot, "review", "review-data.js"), output, "utf8");

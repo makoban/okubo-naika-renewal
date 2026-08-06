@@ -1,36 +1,16 @@
 (function () {
-  const STORAGE_KEY = "okuboClinicPreviewContentV2";
   const clone = (value) => JSON.parse(JSON.stringify(value));
   const defaults = clone(window.OKUBO_REVIEW_DEFAULTS || { topics: [], fees: [] });
 
-  function normalize(value) {
-    if (!value || !Array.isArray(value.topics) || !Array.isArray(value.fees)) {
-      return clone(defaults);
-    }
-
-    return {
-      topics: value.topics.filter(Boolean),
-      fees: value.fees.filter(Boolean),
-    };
-  }
-
   function read() {
-    try {
-      const saved = window.localStorage.getItem(STORAGE_KEY);
-      return saved ? normalize(JSON.parse(saved)) : clone(defaults);
-    } catch (error) {
-      return clone(defaults);
-    }
+    return clone(defaults);
   }
 
-  function save(value) {
-    const normalized = normalize(value);
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
-    return clone(normalized);
+  function save() {
+    return clone(defaults);
   }
 
   function reset() {
-    window.localStorage.removeItem(STORAGE_KEY);
     return clone(defaults);
   }
 
@@ -67,7 +47,8 @@
   const state = read();
   window.OKUBO_TOPICS = state.topics;
   window.OKUBO_REVIEW_STORE = {
-    key: STORAGE_KEY,
+    key: null,
+    readonly: true,
     defaults: clone(defaults),
     get: read,
     save,
