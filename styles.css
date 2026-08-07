@@ -41,6 +41,7 @@ a {
 img {
   display: block;
   max-width: 100%;
+  height: auto;
 }
 
 h1,
@@ -222,7 +223,7 @@ aside,
 .hero h1 {
   max-width: 760px;
   margin: 0;
-  font-family: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", serif;
+  font-family: "Hiragino Maru Gothic ProN", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
   font-size: 68px;
   font-weight: 700;
   line-height: 1.14;
@@ -761,6 +762,61 @@ aside,
 .wide-panel,
 .lead-panel {
   grid-column: 1 / -1;
+}
+
+.credentials-staff-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+  gap: clamp(30px, 5vw, 64px);
+  align-items: center;
+}
+
+.credentials-copy,
+.staff-welcome {
+  min-width: 0;
+}
+
+.staff-welcome {
+  display: grid;
+  align-items: end;
+  justify-items: center;
+}
+
+.staff-speech {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 -10px;
+  padding: 20px 22px;
+  border: 2px solid rgba(36, 119, 111, 0.2);
+  border-radius: 22px 22px 8px 22px;
+  color: #425158 !important;
+  background: #fffaf0;
+  box-shadow: 0 12px 28px rgba(36, 50, 56, 0.08);
+  font-weight: 800 !important;
+  line-height: 1.8;
+  text-wrap: pretty;
+}
+
+.staff-speech::after {
+  position: absolute;
+  right: 42px;
+  bottom: -16px;
+  width: 24px;
+  height: 24px;
+  border-right: 2px solid rgba(36, 119, 111, 0.2);
+  border-bottom: 2px solid rgba(36, 119, 111, 0.2);
+  background: #fffaf0;
+  content: "";
+  transform: rotate(45deg);
+}
+
+.staff-speech .keep {
+  display: inline-block;
+}
+
+.staff-welcome img {
+  width: min(420px, 100%);
+  margin: 0 auto;
 }
 
 .text-panel p,
@@ -1384,6 +1440,19 @@ aside,
   .page-visual img,
   .link-card-image {
     aspect-ratio: 4 / 3;
+  }
+
+  .credentials-staff-panel {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .staff-speech {
+    padding: 18px;
+  }
+
+  .staff-welcome img {
+    width: min(360px, 100%);
   }
 
   .equipment-card img {
