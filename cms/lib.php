@@ -43,7 +43,9 @@ function okubo_cms_session() {
     header('X-Robots-Tag: noindex, nofollow');
     header('X-Content-Type-Options: nosniff');
     header('X-Frame-Options: SAMEORIGIN');
-    header('Referrer-Policy: no-referrer');
+    // Basic form POSTs can acquire an opaque Origin under no-referrer.
+    // Preserve same-origin context while withholding referrers from other sites.
+    header('Referrer-Policy: same-origin');
     header("Content-Security-Policy: frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'");
     ini_set('session.use_strict_mode', '1');
     ini_set('session.use_only_cookies', '1');

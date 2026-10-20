@@ -24,6 +24,7 @@ test('customer login and publication reject unauthenticated, cross-origin and st
     assert.equal((await request('/cms/')).status,302);
     assert.equal((await request('/cms/api.php',{method:'POST',body:'{}'})).status,401);
     let response=await request('/cms/login.php');
+    assert.equal(response.headers.get('referrer-policy'),'same-origin');
     const loginHtml=await response.text();
     const csrf=loginHtml.match(/name="csrf" value="([a-f0-9]+)"/)[1];
     response=await request('/cms/login.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded',Origin:origin},body:new URLSearchParams({csrf,username:'test-clinic',password:'synthetic-test-password'})});
