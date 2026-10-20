@@ -28,6 +28,10 @@ python3 scripts/build-sakura-package.py --production --output output/sakura-prod
 
 公開データは30秒間キャッシュし、取得失敗や不正なJSONは適用せず最後の正常な公開内容を維持します。キャッシュは公開フォルダーの外（`/home/bantex-okubo/.okubo-cms-cache`）へ置きます。初回通信失敗時も、配置済みの承認済みJSONを表示します。現在の公開revisionは `https://www.okubo-naika-cl.com/published-content.php?format=json` で確認できます。
 
+2026-10-20に本番への設置と自動反映を確認しました。非表示のお知らせだけを一時更新した[公開試験](https://github.com/makoban/okubo-naika-renewal/issues/2)と、元の内容に戻す[復元試験](https://github.com/makoban/okubo-naika-renewal/issues/3)は、どちらも本番データの一致確認後に自動完了しました。全公開データは試験前と一致し、患者向けの表示内容は維持しています。GitHubの配信キャッシュを含め、反映確認には数分かかる場合があります。
+
+編集画面の2タブ、操作ガイド、本番TOP・医院案内を320・360・375・390・393・412・430・1440pxの40条件で確認し、横はみ出し・主要要素の親枠からのはみ出しはありません。以前のブラウザ下書きは自動削除しません。古い下書きを使わない場合は「公開中の内容を読み直す」から現在の本番内容を取得してください。
+
 CMSのNodeテストは `node --test tests/*.test.mjs`、PHPの検証・障害時保持・競合テストは `php tests/published-content-test.php`。GitHub Actionsの `Test CMS publishing` でも両方を実行します。
 
 ## 確認ファイル
