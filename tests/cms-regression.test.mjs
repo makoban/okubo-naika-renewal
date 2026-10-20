@@ -6,6 +6,7 @@ import path from "node:path";
 import test from "node:test";
 import vm from "node:vm";
 import { fileURLToPath } from "node:url";
+import { decodeIssueBody, normalizeContent, publishedDocument } from "../scripts/apply-cms-payload.mjs";
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -77,9 +78,12 @@ test("CMS payload generation preserves the published source marker", (t) => {
     path.join(repositoryRoot, "scripts", "apply-cms-payload.mjs"),
     path.join(temporaryRoot, "scripts", "apply-cms-payload.mjs")
   );
+  const previous = JSON.parse(fs.readFileSync(path.join(repositoryRoot, "published-content.json"), "utf8"));
+  fs.writeFileSync(path.join(temporaryRoot, "published-content.json"), JSON.stringify(previous));
 
   const payload = {
-    version: 1,
+    version: 2,
+    baseRevision: previous.revision,
     topics: [
       {
         id: "topic-test",
@@ -124,4 +128,32 @@ test("CMS payload generation preserves the published source marker", (t) => {
     topics: payload.topics,
     fees: payload.fees,
   });
+  const published = JSON.parse(fs.readFileSync(path.join(temporaryRoot, "published-content.json"), "utf8"));
+  assert.deepEqual(published.content, plain(generatedWindow.OKUBO_REVIEW_DEFAULTS));
+  assert.match(published.revision, /^[a-f0-9]{64}$/);
+});
+
+function issueBody(payload) {
+  return `<!-- OKUBO_CMS_DATA_BEGIN -->${Buffer.from(JSON.stringify(payload)).toString("base64")}<!-- OKUBO_CMS_DATA_END -->`;
+}
+
+test("an older editing session cannot replace a newer publication", () => {
+  const current = "a".repeat(64);
+  const stale = { version: 2, baseRevision: "b".repeat(64), topics: [], fees: [] };
+  assert.throws(() => decodeIssueBody(issueBody(stale), current), /編集中に公開内容が更新/);
+  assert.throws(() => decodeIssueBody(issueBody({ version: 1, topics: [], fees: [] }), current), /編集画面が古い/);
+  assert.deepEqual(decodeIssueBody(issueBody({ ...stale, baseRevision: current }), current), { topics: [], fees: [] });
+});
+
+test("the same content keeps its publication revision and time", () => {
+  const initial = publishedDocument({ topics: [], fees: [] });
+  initial.publishedAt = "2026-10-01T00:00:00.000Z";
+  assert.deepEqual(publishedDocument(initial.content, initial), initial);
+});
+
+test("unsafe links are removed and oversized content is rejected", () => {
+  const content = normalizeContent({ topics: [{ id: "x", title: "Text", link: "javascript:alert(1)" }], fees: [] });
+  assert.equal(content.topics[0].link, "");
+  assert.throws(() => normalizeContent({ topics: [{ title: "x".repeat(161) }], fees: [] }), /文字数/);
+  assert.throws(() => normalizeContent({ topics: Array(21).fill({}), fees: [] }), /項目数/);
 });

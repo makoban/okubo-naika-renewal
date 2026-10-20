@@ -1,6 +1,34 @@
-# おおくぼ内科クリニック リニューアル案
+# おおくぼ内科クリニック
 
-現行サイト `http://www.okubo-naika-cl.com/` のトップページ内容を大きく変えず、デザインだけを最近の医院サイト寄りに整えた静的プロトタイプです。
+医院サイトの通常版とデザイン比較用プレビューを管理します。通常版の正式公開先は `https://www.okubo-naika-cl.com/` です。
+
+## さくらへの正式公開（2026-10-16）
+
+- 通常版7ページを、さくらのレンタルサーバ スタンダードへ配置。
+- 初期ドメイン: `bantex-okubo.sakura.ne.jp`、サーバー: `www2227.sakura.ne.jp`、公開フォルダー: `/home/bantex-okubo/www/`。
+- DNS: `ns1.dns.ne.jp` / `ns2.dns.ne.jp`、A: `182.48.49.167`、wwwはapexのCNAME。
+- 無料Let's Encrypt証明書を導入。HTTP・wwwなし・index.htmlはHTTPSのwww付きルートへ301転送。
+- 旧URLは `original.html`→`access.html`、`original2.html`→`doctor.html`、`original3.html`→`guide.html`、`original7.html`→`emergency.html`、`original8.html`→`endoscopy.html`、`original9.html`→`pylori.html` へ301転送。
+- 初期ドメインは `X-Robots-Tag: noindex, nofollow`。GitHub Pagesは引き続き確認用で、ソースHTMLのnoindexを保持。
+- 医院ドメインのメール利用なし。旧サービスの停止日・最終請求は未確認。
+
+2026-10-16の切替直後は、この端末のDNSに旧IPが残っていたため最終確認を保留しました。2026-10-20、通常回線の正式URL `https://www.okubo-naika-cl.com/` で新HPのブラウザ表示とHTTPSを確認し、DNS反映待ちが解消したことを確認しました。IPの強制指定なしで全42公開ファイルのSHA-256一致（.htaccessの403も別途確認）、全7ページと10転送条件を確認済みです。HP公開の技術的な移転は完了しています。旧サービスの停止・最終請求の契約確認は別途必要です。
+
+本番用パッケージを次で作成します。原本画像、別案、確認ページ、メール資料は含めません。
+
+```bash
+python3 scripts/build-sakura-package.py --production --output output/sakura-production-20261016
+```
+
+生成ZIPをさくらのファイルマネージャーで公開フォルダーへアップロードし、その場で解凍します。パッケージにはcanonical・robots.txt・sitemap.xml・転送用.htaccessを含み、公開フォルダーに置いたZIPへのHTTPアクセスは拒否します。新しいドメインで同様に移転する場合は、HTTPS証明書が有効になる前に接続先を切り替えないでください。パスワード等をこのリポジトリへ保存しません。
+
+編集画面で「本番HPに公開する」を押し、所有者のGitHubアカウントで送信を確定すると、Actionsがデータを検証し `published-content.json` を更新します。さくらの `published-content.php` がこの固定URLの公開済みJSONだけを取得し、既存の `review-data.js` と同じ形式で配信します。コード・画像・スタイルの更新には引き続き上記パッケージを使います。
+
+公開JSONの内容ハッシュを本番側で照合し、本番のrevisionと内容が一致した場合だけIssueを完了にします。下書きやプレビューは本番に読み込みません。編集中の公開競合はbaseRevisionで拒否します。取得元のURLは固定で、GETパラメーターから変更できません。さくら用のパスワード・SSH秘密鍵・GitHubトークンを追加登録する必要はありません。
+
+公開データは30秒間キャッシュし、取得失敗や不正なJSONは適用せず最後の正常な公開内容を維持します。キャッシュは公開フォルダーの外（`/home/bantex-okubo/.okubo-cms-cache`）へ置きます。初回通信失敗時も、配置済みの承認済みJSONを表示します。現在の公開revisionは `https://www.okubo-naika-cl.com/published-content.php?format=json` で確認できます。
+
+CMSのNodeテストは `node --test tests/*.test.mjs`、PHPの検証・障害時保持・競合テストは `php tests/published-content-test.php`。GitHub Actionsの `Test CMS publishing` でも両方を実行します。
 
 ## 確認ファイル
 
