@@ -73,7 +73,7 @@
       </div>
     </main>
 
-    <script src="../review-data.js"></script>
+    <script src="../published-content.php"></script>
     <script nonce="<?= okubo_cms_escape($nonce) ?>">window.OKUBO_CMS_CSRF = <?= json_encode(okubo_cms_csrf()) ?>;</script>
     <script src="./preview-store.js?v=20261020-2"></script>
     <script src="./editor.js?v=20261020-2"></script>

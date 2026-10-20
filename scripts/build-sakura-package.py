@@ -105,6 +105,7 @@ for source in sorted(files):
     shutil.copyfile(source, target)
     if args.production and target.suffix == ".html":
         html = target.read_text()
+        html = html.replace('src="./review-data.js"', 'src="./review-data.js?v=20261020-2"')
         html = re.sub(r'\s*<meta\s+name="robots"\s+content="noindex,nofollow"\s*/>',
                       "", html)
         url = CANONICAL + ("" if rel.name == "index.html" else rel.as_posix())
