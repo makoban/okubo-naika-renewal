@@ -24,7 +24,7 @@ python3 scripts/build-sakura-package.py --production --output output/sakura-prod
 
 ## 医院用の更新画面（2026-10-20）
 
-更新URLは https://www.okubo-naika-cl.com/admin/ です。医院用ID・パスワードでログインし、編集 → プレビュー →「本番HPに公開する」→ 確認でOK、で直接公開できます。GitHubの操作・手動アップロード・PCの常時起動は不要です。以前のGitHub Pages編集URLはこの画面への案内に変更します。編集範囲はTOPのトピックスと診療報酬のお知らせです。
+更新URLは https://www.okubo-naika-cl.com/admin/ です。医院用ID・パスワードでログインし、編集 → プレビュー →「本番HPに公開する」→ 確認でOK、で直接公開できます。GitHubの操作・手動アップロード・PCの常時起動は不要です。以前のGitHub Pages編集URLも、この画面への案内へ変更済みです。編集範囲はTOPのトピックスと診療報酬のお知らせです。
 
 公開データの正本は、さくらの公開フォルダー外 `/home/bantex-okubo/.okubo-cms-state/published.json` です。認証済み・CSRF検証済みのPOSTだけを受け付け、件数・文字数・リンク先・項目形式を検証して、ロックと原子的な置き換えで保存します。古い公開revisionからの上書きは拒否します。更新前の公開データを同じ非公開領域のbackupsへ保存し、audit.jsonlには時刻・ユーザー名・revisionだけを記録します。GitHub JSONの自動取得とIssue公開ワークフローは廃止しました。再配置時も非公開の公開データは上書きしません。
 
@@ -33,6 +33,8 @@ python3 scripts/build-sakura-package.py --production --output output/sakura-prod
 下書きは `okuboClinicCustomerDraftV1` として医院側の同じブラウザ内だけに保存します。プレビューは本番と同じHTML・画像・スタイルを使い、公開ページは下書きを読みません。API保存後には公開データのrevisionを読み直し、一致した場合だけ画面に公開完了と表示します。使い方はログイン後の「使い方」で確認できます。
 
 CMSのNodeテストは `node --test tests/*.test.mjs`、PHPの検証・保存・バックアップ・競合テストは `php tests/published-content-test.php`。GitHub Actionsの `Test CMS publishing` ではPHPのHTTPサーバーも起動し、ログイン・Cookie・未認証/CSRF/外部Origin/古いrevisionの拒否・直接公開・ログアウト後の拒否を検証します。
+
+2026-10-20、本番のChromeでログイン・下書きだけのプレビュー・公開ボタンからの直接反映・元データへの復元を確認しました。公開データは試験前と全項目一致しています。ログイン、2編集タブ、使い方、2プレビューを320・360・375・390・393・412・430・1440pxの48条件で確認し、横はみ出し・主要要素の親枠からのはみ出しはありません。46静的配信ファイルのSHA-256一致、未認証の編集302/公開401、初期設定・テンプレート・設置ZIPの403も確認済みです。
 
 ## 確認ファイル
 
