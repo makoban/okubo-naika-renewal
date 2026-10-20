@@ -17,6 +17,7 @@ jobs:
   publish:
     if: github.event.issue.user.login == 'makoban' && startsWith(github.event.issue.title, '[CMS Publish]')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout site
         uses: actions/checkout@v4

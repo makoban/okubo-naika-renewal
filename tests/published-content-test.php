@@ -22,6 +22,15 @@ $fallbackFile = dirname(__DIR__) . '/published-content.json';
 $raw = file_get_contents($fallbackFile);
 $initial = okubo_decode_document($raw);
 check($initial !== null, 'The JavaScript-generated publication must validate in PHP');
+// Keep malformed-item tests independent of future legitimate empty publications.
+if (count($initial['content']['topics']) === 0) {
+    $initial['content']['topics'][] = [
+        'id' => 'php-test-topic', 'date' => '2026-10-20', 'label' => 'お知らせ',
+        'title' => 'Test fixture', 'body' => '', 'link' => '', 'linkText' => '',
+        'tone' => 'normal', 'font' => 'gothic', 'status' => 'hide'
+    ];
+    $initial = document_with_body($initial, '');
+}
 $bad = $initial;
 $bad['revision'] = [];
 check(okubo_decode_document(json_encode($bad)) === null, 'Malformed metadata must not throw');
@@ -71,7 +80,7 @@ try {
 
     $empty = $directory . '/first-failure';
     $fallback = okubo_load_published($empty, $fallbackFile, 1300, function () { return null; });
-    check($fallback['document']['revision'] === $initial['revision'], 'Initial network failure must serve the bundled approved publication');
+    check($fallback['document']['revision'] === okubo_decode_document($raw)['revision'], 'Initial network failure must serve the bundled approved publication');
     check($fallback['validAt'] === 0, 'Bundled fallback must not claim a successful remote sync');
     echo "PHP publication validation, cache, failure recovery, and concurrency: OK\n";
 } finally {
