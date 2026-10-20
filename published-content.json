@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": "4d316cfc0c676d73ed8977c519805dddcef6c913a14f413edcf6bbf49b4bf4b7",
-  "publishedAt": "2026-10-20T06:42:19.128Z",
+  "revision": "f91ac89581ec6bf07ff805c9298be76c8b091a670166896bb8d3047d2bcc8c45",
+  "publishedAt": "2026-10-20T06:57:22.106Z",
   "content": {
     "topics": [
       {
@@ -34,7 +34,7 @@
         "date": "2026.07.01",
         "label": "非表示サンプル",
         "title": "非表示にしたお知らせはサイトに表示されません",
-        "body": "管理画面から表示・非表示を切り替えられます。",
+        "body": "管理画面から表示・非表示を切り替えられます。\n自動公開接続確認 20261020",
         "link": "",
         "linkText": "",
         "tone": "soft",
