@@ -22,17 +22,17 @@ python3 scripts/build-sakura-package.py --production --output output/sakura-prod
 
 生成ZIPをさくらのファイルマネージャーで公開フォルダーへアップロードし、その場で解凍します。パッケージにはcanonical・robots.txt・sitemap.xml・転送用.htaccessを含み、公開フォルダーに置いたZIPへのHTTPアクセスは拒否します。新しいドメインで同様に移転する場合は、HTTPS証明書が有効になる前に接続先を切り替えないでください。パスワード等をこのリポジトリへ保存しません。
 
-編集画面で「本番HPに公開する」を押し、所有者のGitHubアカウントで送信を確定すると、Actionsがデータを検証し `published-content.json` を更新します。さくらの `published-content.php` がこの固定URLの公開済みJSONだけを取得し、既存の `review-data.js` と同じ形式で配信します。コード・画像・スタイルの更新には引き続き上記パッケージを使います。
+## 医院用の更新画面（2026-10-20）
 
-公開JSONの内容ハッシュを本番側で照合し、本番のrevisionと内容が一致した場合だけIssueを完了にします。下書きやプレビューは本番に読み込みません。編集中の公開競合はbaseRevisionで拒否します。取得元のURLは固定で、GETパラメーターから変更できません。さくら用のパスワード・SSH秘密鍵・GitHubトークンを追加登録する必要はありません。
+更新URLは https://www.okubo-naika-cl.com/admin/ です。医院用ID・パスワードでログインし、編集 → プレビュー →「本番HPに公開する」→ 確認でOK、で直接公開できます。GitHubの操作・手動アップロード・PCの常時起動は不要です。以前のGitHub Pages編集URLはこの画面への案内に変更します。編集範囲はTOPのトピックスと診療報酬のお知らせです。
 
-公開データは30秒間キャッシュし、取得失敗や不正なJSONは適用せず最後の正常な公開内容を維持します。キャッシュは公開フォルダーの外（`/home/bantex-okubo/.okubo-cms-cache`）へ置きます。初回通信失敗時も、配置済みの承認済みJSONを表示します。現在の公開revisionは `https://www.okubo-naika-cl.com/published-content.php?format=json` で確認できます。
+公開データの正本は、さくらの公開フォルダー外 `/home/bantex-okubo/.okubo-cms-state/published.json` です。認証済み・CSRF検証済みのPOSTだけを受け付け、件数・文字数・リンク先・項目形式を検証して、ロックと原子的な置き換えで保存します。古い公開revisionからの上書きは拒否します。更新前の公開データを同じ非公開領域のbackupsへ保存し、audit.jsonlには時刻・ユーザー名・revisionだけを記録します。GitHub JSONの自動取得とIssue公開ワークフローは廃止しました。再配置時も非公開の公開データは上書きしません。
 
-2026-10-20に本番への設置と自動反映を確認しました。非表示のお知らせだけを一時更新した[公開試験](https://github.com/makoban/okubo-naika-renewal/issues/2)と、元の内容に戻す[復元試験](https://github.com/makoban/okubo-naika-renewal/issues/3)は、どちらも本番データの一致確認後に自動完了しました。全公開データは試験前と一致し、患者向けの表示内容は維持しています。GitHubの配信キャッシュを含め、反映確認には数分かかる場合があります。
+ログインはbcrypt照合、Secure/HttpOnly/SameSite=StrictのセッションCookie、30分の無操作期限・8時間の最長期限、IP別の連続失敗制限を使用します。Referrer-Policyはsame-originとし、フォームPOSTのOrigin検証と両立させます。認証の初期値はローカル生成し、秘密庫 `projects/okubo-cms` の `OKUBO_CMS_USER` / `OKUBO_CMS_PASSWORD` で保管します。サーバーには照合用ハッシュのみを保存し、初期配置用PHPは初期化後に削除します。認証設定・データ・バックアップはWebから取得できません。
 
-編集画面の2タブ、操作ガイド、本番TOP・医院案内を320・360・375・390・393・412・430・1440pxの40条件で確認し、横はみ出し・主要要素の親枠からのはみ出しはありません。以前のブラウザ下書きは自動削除しません。古い下書きを使わない場合は「公開中の内容を読み直す」から現在の本番内容を取得してください。
+下書きは `okuboClinicCustomerDraftV1` として医院側の同じブラウザ内だけに保存します。プレビューは本番と同じHTML・画像・スタイルを使い、公開ページは下書きを読みません。API保存後には公開データのrevisionを読み直し、一致した場合だけ画面に公開完了と表示します。使い方はログイン後の「使い方」で確認できます。
 
-CMSのNodeテストは `node --test tests/*.test.mjs`、PHPの検証・障害時保持・競合テストは `php tests/published-content-test.php`。GitHub Actionsの `Test CMS publishing` でも両方を実行します。
+CMSのNodeテストは `node --test tests/*.test.mjs`、PHPの検証・保存・バックアップ・競合テストは `php tests/published-content-test.php`。GitHub Actionsの `Test CMS publishing` ではPHPのHTTPサーバーも起動し、ログイン・Cookie・未認証/CSRF/外部Origin/古いrevisionの拒否・直接公開・ログアウト後の拒否を検証します。
 
 ## 確認ファイル
 

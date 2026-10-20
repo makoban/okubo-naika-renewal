@@ -780,6 +780,6 @@ body.review-admin {
   }
 }
 /* The clinic editor includes its own session controls. */
-.cms-header-actions form { margin: 0; }
-.cms-header-actions button { font: inherit; cursor: pointer; }
+.cms-header-actions form { display: flex; margin: 0; }
+.cms-header-actions button { font-family: inherit; cursor: pointer; background: transparent; color: inherit; width: 100%; }
 .cms-header-actions .cms-site-link { white-space: nowrap; }

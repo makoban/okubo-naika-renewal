@@ -117,6 +117,7 @@ if args.production:
     # Previews use the exact production template/assets with the private browser draft.
     for page in ("index.html", "guide.html"):
         html = (PUBLIC / page).read_text()
+        html = html.replace('<head>', '<head>\n    <base href="/" />', 1)
         html = html.replace('"./', '"/')
         html = html.replace('src="/review-store.js"', 'src="/admin/preview-store.js"')
         gate = "<?php require dirname(__DIR__) . '/lib.php'; okubo_cms_session(); okubo_cms_require_login(); ?>\n"
