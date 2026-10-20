@@ -26,10 +26,10 @@ test('customer login and publication reject unauthenticated, cross-origin and st
     let response=await request('/cms/login.php');
     const loginHtml=await response.text();
     const csrf=loginHtml.match(/name="csrf" value="([a-f0-9]+)"/)[1];
-    assert.match(response.headers.get('set-cookie') || '',/HttpOnly/i);
-    assert.match(response.headers.get('set-cookie') || '',/SameSite=Strict/i);
     response=await request('/cms/login.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded',Origin:origin},body:new URLSearchParams({csrf,username:'test-clinic',password:'synthetic-test-password'})});
     assert.equal(response.status,303);
+    assert.match(response.headers.get('set-cookie') || '',/HttpOnly/i);
+    assert.match(response.headers.get('set-cookie') || '',/SameSite=Strict/i);
     response=await request('/cms/');assert.equal(response.status,200);
     const html=await response.text();assert.ok(!html.includes('github.com'));
     const token=html.match(/window.OKUBO_CMS_CSRF = "([a-f0-9]+)"/)[1];
