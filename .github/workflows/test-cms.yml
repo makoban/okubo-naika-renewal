@@ -17,5 +17,5 @@ jobs:
         with:
           node-version: '22'
       - run: node --test tests/*.test.mjs
-      - run: php -l published-content.php
+      - run: find cms -name '*.php' -print0 | xargs -0 -n1 php -l; php -l published-content.php
       - run: php tests/published-content-test.php

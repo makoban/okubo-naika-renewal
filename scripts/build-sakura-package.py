@@ -61,12 +61,15 @@ def local_path(ref, source):
 queue = [ROOT / page for page in PAGES]
 if args.production:
     queue += [ROOT / "published-content.php", ROOT / "published-content.json"]
+    queue += list((ROOT / "cms").rglob("*.php")) + list((ROOT / "cms").glob("*.js")) + list((ROOT / "cms").glob("*.css")) + list((ROOT / "cms").rglob(".htaccess"))
 files = set()
 while queue:
     source = queue.pop()
     if source in files:
         continue
     files.add(source)
+    if source.is_relative_to(ROOT / "cms"):
+        continue
     if source.suffix not in (".html", ".css", ".js"):
         continue
     content = source.read_text()
@@ -95,6 +98,8 @@ def record(target):
 
 for source in sorted(files):
     rel = source.relative_to(ROOT)
+    if source.is_relative_to(ROOT / "cms"):
+        rel = Path("admin") / source.relative_to(ROOT / "cms")
     target = PUBLIC / rel
     target.parent.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(source, target)
@@ -108,6 +113,16 @@ for source in sorted(files):
     record(target)
 
 if args.production:
+    # Previews use the exact production template/assets with the private browser draft.
+    for page in ("index.html", "guide.html"):
+        html = (PUBLIC / page).read_text()
+        html = html.replace('"./', '"/')
+        html = html.replace('src="/review-store.js"', 'src="/admin/preview-store.js"')
+        gate = "<?php require dirname(__DIR__) . '/lib.php'; okubo_cms_session(); okubo_cms_require_login(); ?>\n"
+        target = PUBLIC / "admin" / "preview" / page.replace(".html", ".php")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(gate + html)
+        record(target)
     legacy = {"original.html": "access.html", "original2.html": "doctor.html",
               "original3.html": "guide.html", "original7.html": "emergency.html",
               "original8.html": "endoscopy.html", "original9.html": "pylori.html"}
@@ -117,7 +132,7 @@ if args.production:
              'Header set X-Robots-Tag "noindex, nofollow" env=okubo_staging',
              "</IfModule>", "", "RewriteEngine On",
              "# Deployment archives are retained locally and are not public downloads.",
-             r"RewriteRule ^okubo-normal-site\.zip$ - [F,L]", "",
+             r"RewriteRule ^okubo-(?:normal-site|cms-install)\.zip$ - [F,L]", "",
              "# Preserve the old clinic page addresses when the official domain is used."]
     for old, new in {**legacy, "index.html": ""}.items():
         rules += [r"RewriteCond %{HTTP_HOST} ^(?:www\.)?okubo-naika-cl\.com$ [NC]",

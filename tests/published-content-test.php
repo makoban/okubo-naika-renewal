@@ -50,39 +50,27 @@ check(okubo_decode_document(str_repeat('x', OKUBO_CMS_MAX_BYTES + 1)) === null, 
 $unicode = document_with_body($initial, "日本語 / 😀 \u{2028} \u{2029}");
 check(okubo_decode_document(json_encode($unicode)) !== null, 'Unicode and line terminators must remain intact');
 
+require dirname(__DIR__) . '/cms/lib.php';
 $directory = sys_get_temp_dir() . '/okubo-cms-' . bin2hex(random_bytes(8));
 mkdir($directory, 0700);
+putenv('OKUBO_CMS_DATA_DIR=' . $directory);
 try {
-    $new = document_with_body($initial, 'Approved test data');
-    $fetches = 0;
-    $fetcher = function () use (&$fetches, $new) { $fetches++; return json_encode($new); };
-    $first = okubo_load_published($directory, $fallbackFile, 1000, $fetcher);
-    check($first['document']['revision'] === $new['revision'], 'An approved update must be applied');
-    check($first['validAt'] === 1000, 'Successful refresh time must be recorded');
-    $cached = okubo_load_published($directory, $fallbackFile, 1010, $fetcher);
-    check($fetches === 1 && $cached['document']['revision'] === $new['revision'], 'Fresh cache must avoid a remote call');
-
-    $failed = okubo_load_published($directory, $fallbackFile, 1040, function () { return '{invalid'; });
-    check($failed['document']['revision'] === $new['revision'], 'Remote corruption must preserve the last approved content');
-    check($failed['validAt'] === 1000 && $failed['checkedAt'] === 1040, 'Failure and success times must remain distinct');
-    okubo_load_published($directory, $fallbackFile, 1041, function () { throw new RuntimeException('Failure retry was not throttled'); });
-
-    $lock = fopen($directory . '/refresh.lock', 'c');
-    flock($lock, LOCK_EX);
-    $busy = okubo_load_published($directory, $fallbackFile, 1100, function () { throw new RuntimeException('Concurrent refresh must not run'); });
-    check($busy['document']['revision'] === $new['revision'], 'A concurrent reader must keep serving approved content');
-    flock($lock, LOCK_UN);
-    fclose($lock);
-
-    file_put_contents($directory . '/published.json', '{broken cache');
-    $recovered = okubo_load_published($directory, $fallbackFile, 1200, $fetcher);
-    check($recovered['document']['revision'] === $new['revision'], 'Corrupt cache must recover');
-
-    $empty = $directory . '/first-failure';
-    $fallback = okubo_load_published($empty, $fallbackFile, 1300, function () { return null; });
-    check($fallback['document']['revision'] === okubo_decode_document($raw)['revision'], 'Initial network failure must serve the bundled approved publication');
-    check($fallback['validAt'] === 0, 'Bundled fallback must not claim a successful remote sync');
-    echo "PHP publication validation, cache, failure recovery, and concurrency: OK\n";
-} finally {
-    remove_test_directory($directory);
-}
+    $new = document_with_body($initial, 'Approved customer publication');
+    $payload = ['baseRevision' => okubo_cms_current()['revision'], 'content' => $new['content']];
+    $published = okubo_cms_publish($payload, 'test-editor');
+    check($published['revision'] === $new['revision'], 'Customer publication must persist');
+    check(okubo_cms_current()['revision'] === $new['revision'], 'The public reader must use customer content');
+    check(count(glob($directory . '/backups/*.json')) === 1, 'Previous publication must be backed up');
+    try { okubo_cms_publish($payload, 'test-editor'); throw new RuntimeException('Stale update was accepted'); }
+    catch (LogicException $expected) {}
+    $payload['baseRevision'] = $published['revision'];
+    $same = okubo_cms_publish($payload, 'test-editor');
+    check($same['publishedAt'] === $published['publishedAt'], 'An identical save must be idempotent');
+    $payload['content']['topics'][0]['link'] = 'javascript:alert(1)';
+    try { okubo_cms_publish($payload, 'test-editor'); throw new RuntimeException('Unsafe content was accepted'); }
+    catch (InvalidArgumentException $expected) {}
+    file_put_contents($directory . '/published.json', '{broken');
+    try { okubo_cms_current(); throw new LogicException('Corruption was ignored'); }
+    catch (RuntimeException $expected) {}
+    echo "PHP validation, atomic customer publication, backup, conflict protection, and corruption rejection: OK\n";
+} finally { remove_test_directory($directory); }

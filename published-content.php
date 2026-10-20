@@ -1,7 +1,5 @@
 <?php
-// Read-only publication bridge. Only this fixed, owner-controlled source is read.
-const OKUBO_PUBLISHED_SOURCE = 'https://raw.githubusercontent.com/makoban/okubo-naika-renewal/main/published-content.json';
-const OKUBO_CMS_CACHE_SECONDS = 30;
+// Public reader. Authenticated CMS publication is stored outside the web root.
 const OKUBO_CMS_MAX_BYTES = 600000;
 
 function okubo_text_valid($value, $limit) {
@@ -44,72 +42,13 @@ function okubo_decode_document($raw) {
     return ['schemaVersion' => 1, 'revision' => $doc['revision'], 'publishedAt' => $doc['publishedAt'], 'content' => $content];
 }
 
-function okubo_fetch_document($now) {
-    $url = OKUBO_PUBLISHED_SOURCE . '?v=' . (int) floor($now / OKUBO_CMS_CACHE_SECONDS);
-    if (function_exists('curl_init')) {
-        $body = '';
-        $ch = curl_init($url);
-        curl_setopt_array($ch, [CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_TIMEOUT => 3,
-            CURLOPT_FOLLOWLOCATION => false, CURLOPT_SSL_VERIFYPEER => true, CURLOPT_SSL_VERIFYHOST => 2,
-            CURLOPT_USERAGENT => 'OkuboClinicPublishedContent/1.0',
-            CURLOPT_HTTPHEADER => ['Accept: application/json', 'Cache-Control: no-cache'],
-            CURLOPT_WRITEFUNCTION => function ($handle, $part) use (&$body) {
-                if (strlen($body) + strlen($part) > OKUBO_CMS_MAX_BYTES) return 0;
-                $body .= $part;
-                return strlen($part);
-            }]);
-        $ok = curl_exec($ch);
-        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-        return $ok !== false && $status === 200 ? $body : null;
-    }
-    $context = stream_context_create(['http' => ['timeout' => 3, 'follow_location' => 0,
-        'header' => "Accept: application/json\r\nCache-Control: no-cache\r\nUser-Agent: OkuboClinicPublishedContent/1.0\r\n"],
-        'ssl' => ['verify_peer' => true, 'verify_peer_name' => true]]);
-    $body = @file_get_contents($url, false, $context, 0, OKUBO_CMS_MAX_BYTES + 1);
-    return is_string($body) && strlen($body) <= OKUBO_CMS_MAX_BYTES ? $body : null;
-}
-
-function okubo_read_cache($file) {
-    $raw = @file_get_contents($file);
-    $cache = is_string($raw) ? json_decode($raw, true) : null;
-    if (!is_array($cache) || !is_int($cache['checkedAt'] ?? null) || !is_int($cache['validAt'] ?? null)) return null;
-    $doc = okubo_decode_document(json_encode($cache['document'] ?? null, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
-    if (!$doc) return null;
-    $cache['document'] = $doc;
-    return $cache;
-}
-
-function okubo_load_published($directory, $fallbackFile, $now, $fetcher) {
-    $fallback = okubo_decode_document(@file_get_contents($fallbackFile));
-    if (!$fallback) throw new RuntimeException('No valid published fallback');
+function okubo_published_current() {
+    $test = PHP_SAPI === 'cli-server' || PHP_SAPI === 'cli';
+    $directory = $test && getenv('OKUBO_CMS_DATA_DIR') ? getenv('OKUBO_CMS_DATA_DIR') : dirname(__DIR__) . '/.okubo-cms-state';
     $file = $directory . '/published.json';
-    $cache = okubo_read_cache($file);
-    $state = $cache ?: ['document' => $fallback, 'checkedAt' => 0, 'validAt' => 0];
-    if ($cache && $now - $cache['checkedAt'] < OKUBO_CMS_CACHE_SECONDS) return $state;
-    if (!is_dir($directory) && !@mkdir($directory, 0700, true)) return $state;
-    $lock = @fopen($directory . '/refresh.lock', 'c');
-    if (!$lock) return $state;
-    @chmod($directory . '/refresh.lock', 0600);
-    if (!flock($lock, LOCK_EX | LOCK_NB)) { fclose($lock); return $state; }
-    try {
-        $current = okubo_read_cache($file);
-        if ($current && $now - $current['checkedAt'] < OKUBO_CMS_CACHE_SECONDS) return $current;
-        if ($current) $state = $current;
-        $remote = okubo_decode_document(call_user_func($fetcher, $now));
-        if ($remote) $state = ['document' => $remote, 'checkedAt' => $now, 'validAt' => $now];
-        else $state['checkedAt'] = $now;
-        $temporary = @tempnam($directory, 'published-');
-        if ($temporary !== false) {
-            @chmod($temporary, 0600);
-            $bytes = json_encode($state, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-            if (@file_put_contents($temporary, $bytes) === false || !@rename($temporary, $file)) @unlink($temporary);
-        }
-        return $state;
-    } finally {
-        flock($lock, LOCK_UN);
-        fclose($lock);
-    }
+    $doc = okubo_decode_document(@file_get_contents(is_file($file) ? $file : __DIR__ . '/published-content.json'));
+    if (!$doc) throw new RuntimeException('Published content unavailable');
+    return $doc;
 }
 
 if (!defined('OKUBO_CMS_LIBRARY_ONLY')) {
@@ -120,10 +59,8 @@ if (!defined('OKUBO_CMS_LIBRARY_ONLY')) {
     $format = ($_GET['format'] ?? '') === 'json' ? 'json' : 'js';
     header('Content-Type: application/' . ($format === 'json' ? 'json' : 'javascript') . '; charset=UTF-8');
     try {
-        $state = okubo_load_published(dirname(__DIR__) . '/.okubo-cms-cache', __DIR__ . '/published-content.json', time(), 'okubo_fetch_document');
-        $doc = $state['document'];
-        $meta = ['revision' => $doc['revision'], 'publishedAt' => $doc['publishedAt'],
-            'checkedAt' => $state['checkedAt'], 'stale' => $state['validAt'] !== $state['checkedAt'] || $state['validAt'] === 0];
+        $doc = okubo_published_current();
+        $meta = ['revision' => $doc['revision'], 'publishedAt' => $doc['publishedAt'], 'checkedAt' => time(), 'stale' => false];
         $flags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
         if ($format === 'json') echo json_encode($doc + ['sync' => $meta], $flags);
         else echo 'window.OKUBO_REVIEW_DEFAULTS = ' . json_encode($doc['content'], $flags)

@@ -1,0 +1,395 @@
+(function () {
+  const store = window.OKUBO_REVIEW_STORE;
+  let state = store.get();
+  let activeSection = "topics";
+
+  const frame = document.querySelector("[data-preview-frame]");
+  const previewTitle = document.querySelector("[data-preview-title]");
+  const sourceStatus = document.querySelector("[data-source-status]");
+  const reloadPublishedButton = document.querySelector("[data-reload-published]");
+  const publishedSourceLoaded =
+    window.OKUBO_REVIEW_SOURCE === "published" && /^[a-f0-9]{64}$/.test(window.OKUBO_PUBLISHED_META?.revision || "");
+  const previewUrls = {
+    topics: "./preview/index.php#topics-title",
+    fees: "./preview/guide.php#fees",
+  };
+  let publishedRevision = window.OKUBO_PUBLISHED_META?.revision;
+  let publishing = false;
+  const itemLimits = { topics: 20, fees: 30 };
+  const fieldLimits = {
+    topics: { date: 40, label: 60, title: 160, body: 4000, linkText: 100 },
+    fees: { title: 200, body: 12000 },
+  };
+  const topicLinkChoices = [
+    ["", "リンクなし"],
+    ["./index.html", "トップページ"],
+    ["./guide.html#hours", "診療時間"],
+    ["./access.html", "交通案内"],
+    ["./doctor.html", "医師の紹介"],
+    ["./guide.html", "医院案内"],
+    ["./emergency.html", "院内緊急検査"],
+    ["./endoscopy.html", "内視鏡検査"],
+    ["./pylori.html", "ピロリ菌"],
+  ];
+
+  function createButton(label, action, className = "", accessibleLabel = "") {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `cms-small-button ${className}`.trim();
+    button.textContent = label;
+    button.dataset.itemAction = action;
+    if (accessibleLabel) button.setAttribute("aria-label", accessibleLabel);
+    return button;
+  }
+
+  function createField(labelText, item, key, options = {}) {
+    const wrapper = document.createElement("div");
+    wrapper.className = `cms-field${options.wide ? " wide" : ""}`;
+
+    const label = document.createElement("label");
+    label.textContent = labelText;
+    wrapper.append(label);
+
+    let control;
+    if (options.type === "textarea") {
+      control = document.createElement("textarea");
+      control.rows = options.rows || 4;
+    } else if (options.choices) {
+      control = document.createElement("select");
+      options.choices.forEach(([value, text]) => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = text;
+        control.append(option);
+      });
+    } else {
+      control = document.createElement("input");
+      control.type = options.type || "text";
+      if (options.placeholder) control.placeholder = options.placeholder;
+    }
+
+    control.value = item[key] || "";
+    control.id = `cms-${String(item.id || "item").replace(/[^A-Za-z0-9_-]/g, "-")}-${key}`;
+    label.htmlFor = control.id;
+    if (options.maxLength && "maxLength" in control) control.maxLength = options.maxLength;
+    control.dataset.field = key;
+    control.addEventListener("input", () => {
+      item[key] = control.value;
+      if (key === "title") {
+        const card = control.closest(".cms-item");
+        const heading = card && card.querySelector(".cms-item-header strong");
+        if (heading) heading.textContent = control.value || "名称未設定";
+      }
+    });
+    control.addEventListener("change", () => {
+      item[key] = control.value;
+    });
+    wrapper.append(control);
+
+    if (options.help) {
+      const help = document.createElement("small");
+      help.className = "cms-help";
+      help.id = `${control.id}-help`;
+      help.textContent = options.help;
+      control.setAttribute("aria-describedby", help.id);
+      wrapper.append(help);
+    }
+    return wrapper;
+  }
+
+  function createItemCard(item, type, index) {
+    const card = document.createElement("article");
+    card.className = "cms-item";
+    card.dataset.itemId = item.id;
+
+    const header = document.createElement("header");
+    header.className = "cms-item-header";
+    const heading = document.createElement("strong");
+    heading.textContent = item.title || "名称未設定";
+    const controls = document.createElement("div");
+    controls.className = "cms-item-controls";
+    controls.append(
+      createButton("↑", "up", "", "この項目を上へ移動"),
+      createButton("↓", "down", "", "この項目を下へ移動"),
+      createButton("削除", "delete", "danger", "この項目を削除")
+    );
+    header.append(heading, controls);
+    card.append(header);
+
+    const fields = document.createElement("div");
+    fields.className = "cms-fields";
+    fields.append(
+      createField("表示状態", item, "status", {
+        choices: [["show", "表示する"], ["hide", "非表示"]],
+      })
+    );
+
+    if (type === "topics") {
+      fields.append(
+        createField("日付", item, "date", { placeholder: "2026.07.21", maxLength: fieldLimits.topics.date }),
+        createField("分類", item, "label", { maxLength: fieldLimits.topics.label }),
+        createField("見出し", item, "title", { wide: true, maxLength: fieldLimits.topics.title }),
+        createField("本文", item, "body", { type: "textarea", wide: true, maxLength: fieldLimits.topics.body }),
+        createField("リンク先", item, "link", {
+          choices: topicLinkChoices,
+          help: "サイト内のページから選択",
+        }),
+        createField("リンク文字", item, "linkText", { maxLength: fieldLimits.topics.linkText }),
+        createField("表示色", item, "tone", {
+          choices: [["normal", "通常"], ["important", "重要（淡いオレンジ）"], ["soft", "補足（グレー）"]],
+          help: "通常版の配色を崩さない3種類に限定",
+        }),
+        createField("見出し書体", item, "font", {
+          choices: [["gothic", "標準ゴシック"], ["mincho", "明朝"]],
+          help: "見出しのみ2種類から選択",
+        })
+      );
+    } else {
+      fields.append(
+        createField("項目名", item, "title", { wide: true, maxLength: fieldLimits.fees.title }),
+        createField("本文", item, "body", { type: "textarea", wide: true, rows: 6, maxLength: fieldLimits.fees.body })
+      );
+    }
+
+    card.append(fields);
+    card.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-item-action]");
+      if (!button) return;
+      handleItemAction(type, index, button.dataset.itemAction);
+    });
+    return card;
+  }
+
+  function render(type) {
+    const container = document.querySelector(`[data-items="${type}"]`);
+    container.replaceChildren();
+    state[type].forEach((item, index) => container.append(createItemCard(item, type, index)));
+  }
+
+  function renderAll() {
+    render("topics");
+    render("fees");
+  }
+
+  function handleItemAction(type, index, action) {
+    const items = state[type];
+    if (action === "up" && index > 0) {
+      [items[index - 1], items[index]] = [items[index], items[index - 1]];
+    }
+    if (action === "down" && index < items.length - 1) {
+      [items[index + 1], items[index]] = [items[index], items[index + 1]];
+    }
+    if (action === "delete") {
+      const title = items[index].title || "この項目";
+      if (!window.confirm(`「${title}」を削除しますか？`)) return;
+      items.splice(index, 1);
+    }
+    render(type);
+  }
+
+  function addItem(type) {
+    if (state[type].length >= itemLimits[type]) {
+      showMessage(`${type === "topics" ? "お知らせ" : "項目"}は${itemLimits[type]}件までです。`, "error");
+      return;
+    }
+
+    if (type === "topics") {
+      state.topics.push({
+        id: store.makeId("topic"),
+        status: "show",
+        date: "",
+        label: "お知らせ",
+        title: "新しいお知らせ",
+        body: "",
+        link: "",
+        linkText: "",
+        tone: "normal",
+        font: "gothic",
+      });
+    } else {
+      state.fees.push({ id: store.makeId("fee"), status: "show", title: "新しい項目", body: "" });
+    }
+    render(type);
+  }
+
+  function cacheBustedUrl(url) {
+    const [base, hash] = url.split("#");
+    return `${base}?preview=${Date.now()}${hash ? `#${hash}` : ""}`;
+  }
+
+  function openSafeWindow(url) {
+    const nextWindow = window.open("", "_blank");
+    if (!nextWindow) return false;
+    nextWindow.opener = null;
+    nextWindow.location.replace(url);
+    return true;
+  }
+
+  function refreshPreview() {
+    frame.src = cacheBustedUrl(previewUrls[activeSection]);
+  }
+
+  function showMessage(text, type = "success") {
+    document.querySelectorAll("[data-message]").forEach((element) => {
+      element.textContent = element.closest(`[data-editor-panel="${activeSection}"]`) ? text : "";
+      element.classList.toggle("is-error", type === "error" && Boolean(element.textContent));
+    });
+  }
+
+  function updateSourceStatus() {
+    const hasDraft = typeof store.hasDraft === "function" && store.hasDraft();
+    sourceStatus.classList.remove("is-warning", "is-draft");
+
+    if (!publishedSourceLoaded) {
+      sourceStatus.textContent = hasDraft
+        ? "このブラウザの下書きを表示中（公開データは取得できませんでした）"
+        : "公開中のデータを取得できませんでした";
+      sourceStatus.classList.add("is-warning");
+      reloadPublishedButton.disabled = true;
+      return;
+    }
+
+    reloadPublishedButton.disabled = false;
+    if (hasDraft) {
+      sourceStatus.textContent = "このブラウザに保存した下書きを表示中";
+      sourceStatus.classList.add("is-draft");
+      return;
+    }
+
+    sourceStatus.textContent = "本番HPの公開内容を表示中";
+  }
+
+  function saveDraft() {
+    try {
+      store.save(state);
+      updateSourceStatus();
+      return true;
+    } catch (error) {
+      showMessage("ブラウザへ保存できませんでした。空き容量や閲覧設定を確認してください。", "error");
+      return false;
+    }
+  }
+
+  function validationError() {
+    for (const type of ["topics", "fees"]) {
+      if (state[type].length > itemLimits[type]) {
+        return `${type === "topics" ? "お知らせ" : "項目"}は${itemLimits[type]}件までです。`;
+      }
+
+      for (const [index, item] of state[type].entries()) {
+        for (const [key, maxLength] of Object.entries(fieldLimits[type])) {
+          if (String(item[key] || "").length > maxLength) {
+            return `${index + 1}件目の「${key === "body" ? "本文" : key === "title" ? "見出し・項目名" : key}」が${maxLength}文字を超えています。`;
+          }
+        }
+      }
+    }
+    return "";
+  }
+
+  function validateBeforeSave() {
+    const error = validationError();
+    if (!error) return true;
+    showMessage(error, "error");
+    return false;
+  }
+
+  function discardChanges() {
+    if (!window.confirm("保存していない編集内容を取り消して、直前の保存状態に戻しますか？")) return;
+    state = store.get();
+    renderAll();
+    showMessage("編集内容を取り消し、直前の保存状態に戻しました。");
+    refreshPreview();
+  }
+
+  function previewChanges() {
+    if (!validateBeforeSave() || !saveDraft()) return;
+    showMessage("変更内容をブラウザ内に保存し、別画面でプレビューを開きました。");
+    if (!openSafeWindow(cacheBustedUrl(previewUrls[activeSection]))) {
+      showMessage("プレビューを開けませんでした。ポップアップを許可して、もう一度お試しください。", "error");
+    }
+  }
+
+  function reloadPublishedContent() {
+    if (!publishedSourceLoaded) {
+      showMessage("公開中の内容を取得できていません。通信を確認してページを再読み込みしてください。", "error");
+      return;
+    }
+    if (!window.confirm("ブラウザに保存した下書きを消して、本番HPの公開内容を読み直しますか？")) return;
+    try {
+      state = store.reset();
+    } catch (error) {
+      showMessage("ブラウザの下書きを消せませんでした。閲覧設定を確認してください。", "error");
+      return;
+    }
+    // Fetch the current production script again, rather than reusing defaults
+    // captured when this editor was first opened.
+    window.location.reload();
+  }
+
+  async function publishChanges() {
+    if (publishing) return;
+    if (!publishedSourceLoaded) { showMessage("公開中の内容を取得できません。ページを再読み込みしてください。", "error"); return; }
+    if (!validateBeforeSave()) return;
+    if (!window.confirm("この内容を本番HPに公開しますか？ 公開すると、患者さまが見るホームページに反映されます。")) return;
+    if (!saveDraft()) return;
+    publishing = true;
+    document.querySelectorAll("[data-publish]").forEach(button => { button.disabled = true; });
+    showMessage("公開しています。この画面で完了をお待ちください。");
+    try {
+      const response = await fetch("./api.php", {
+        method: "POST", credentials: "same-origin",
+        headers: { "Content-Type": "application/json", "X-CSRF-Token": window.OKUBO_CMS_CSRF },
+        body: JSON.stringify({ baseRevision: publishedRevision, content: state }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || "公開できませんでした。");
+      const check = await fetch("../published-content.php?format=json&check=" + Date.now(), { cache: "no-store" });
+      const actual = await check.json();
+      if (!check.ok || actual.revision !== result.revision) throw new Error("保存は受け付けましたが、公開内容の確認ができませんでした。本番HPを確認してください。");
+      publishedRevision = result.revision;
+      showMessage("公開しました。本番HPへ反映されたことを確認しました。");
+      sourceStatus.textContent = "本番HPへの公開が完了しました";
+    } catch (error) {
+      showMessage(error.message || "通信に失敗しました。下書きはこのブラウザに残っています。", "error");
+    } finally {
+      publishing = false;
+      document.querySelectorAll("[data-publish]").forEach(button => { button.disabled = false; });
+    }
+  }
+
+  function switchSection(type) {
+    activeSection = type;
+    document.querySelectorAll("[data-cms-tab]").forEach((tab) => {
+      tab.setAttribute("aria-selected", String(tab.dataset.cmsTab === type));
+      tab.tabIndex = tab.dataset.cmsTab === type ? 0 : -1;
+    });
+    document.querySelectorAll("[data-editor-panel]").forEach((panel) => {
+      panel.hidden = panel.dataset.editorPanel !== type;
+    });
+    previewTitle.textContent = type === "topics" ? "TOPの表示" : "診療報酬欄の表示";
+    refreshPreview();
+  }
+
+  document.querySelectorAll("[data-cms-tab]").forEach((tab) => {
+    tab.addEventListener("click", () => switchSection(tab.dataset.cmsTab));
+    tab.addEventListener("keydown", (event) => {
+      if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+      event.preventDefault();
+      const nextType = tab.dataset.cmsTab === "topics" ? "fees" : "topics";
+      switchSection(nextType);
+      document.querySelector(`[data-cms-tab="${nextType}"]`).focus();
+    });
+  });
+  document.querySelectorAll("[data-add-item]").forEach((button) => {
+    button.addEventListener("click", () => addItem(button.dataset.addItem));
+  });
+  document.querySelectorAll("[data-discard]").forEach((button) => button.addEventListener("click", discardChanges));
+  document.querySelectorAll("[data-preview-new]").forEach((button) => button.addEventListener("click", previewChanges));
+  document.querySelectorAll("[data-publish]").forEach((button) => button.addEventListener("click", publishChanges));
+  reloadPublishedButton.addEventListener("click", reloadPublishedContent);
+
+  updateSourceStatus();
+  renderAll();
+  switchSection(activeSection);
+})();
